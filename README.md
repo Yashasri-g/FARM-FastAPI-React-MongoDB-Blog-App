@@ -113,6 +113,17 @@ The React frontend is set up in `src/App.js`.
 
 ## Running the Application
 
+### Docker Compose Environment
+
+Create a `.env` file in the project root, next to `docker-compose.yml`. Use `.env.example` as the template.
+
+```env
+MONGO_DETAILS=mongodb://mongo:27017/blog_db
+REACT_APP_API_URL=http://localhost:8000/posts/
+```
+
+Docker Hub username, password, or access token should not be stored in `docker-compose.yml`. Use `docker login` so Docker stores registry credentials in your local Docker configuration.
+
 ### 1. Run the FastAPI Backend
 
 Start the FastAPI server:

@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import "./App.css";
 
-const API_URL = "http://localhost:8000/posts/";
+const API_URL =
+  process.env.REACT_APP_API_URL || "http://localhost:8002/posts/";
 
 function App() {
   const [posts, setPosts] = useState([]);
@@ -10,37 +12,60 @@ function App() {
   const [author, setAuthor] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [editPostId, setEditPostId] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-    // Fetch all blog posts on load
-    axios.get(API_URL).then((response) => {
-      setPosts(response.data);
-    });
+    fetchPosts();
   }, []);
 
-  // Create a new blog post
-  const handleCreatePost = async () => {
-    const newPost = { title, content, author };
-    await axios.post(API_URL, newPost);
+  const resetForm = () => {
     setTitle("");
     setContent("");
     setAuthor("");
-    fetchPosts();
+    setIsEditing(false);
+    setEditPostId(null);
   };
 
-  // Fetch all posts again
+  const handleCreatePost = async () => {
+    try {
+      setIsSaving(true);
+      setErrorMessage("");
+      const newPost = { title, content, author };
+      await axios.post(API_URL, newPost);
+      resetForm();
+      await fetchPosts();
+    } catch (error) {
+      setErrorMessage("Unable to create the post. Check the API connection and try again.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const fetchPosts = async () => {
-    const response = await axios.get(API_URL);
-    setPosts(response.data);
+    try {
+      setIsLoading(true);
+      setErrorMessage("");
+      const response = await axios.get(API_URL);
+      setPosts(response.data);
+    } catch (error) {
+      setErrorMessage("Unable to load posts right now.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  // Delete a post
   const handleDeletePost = async (postId) => {
-    await axios.delete(`${API_URL}${postId}`);
-    fetchPosts(); // Refresh the posts list
+    try {
+      setErrorMessage("");
+      await axios.delete(`${API_URL}${postId}`);
+      await fetchPosts();
+    } catch (error) {
+      setErrorMessage("Unable to delete the post right now.");
+    }
   };
 
-  // Populate the form fields for editing
   const handleEditPost = (post) => {
     setTitle(post.title);
     setContent(post.content);
@@ -49,60 +74,127 @@ function App() {
     setIsEditing(true);
   };
 
-  // Update a post
   const handleUpdatePost = async () => {
-    const updatedPost = { title, content, author };
-    await axios.put(`${API_URL}${editPostId}`, updatedPost);
-    setTitle("");
-    setContent("");
-    setAuthor("");
-    setIsEditing(false);
-    setEditPostId(null);
-    fetchPosts(); // Refresh the posts list
+    try {
+      setIsSaving(true);
+      setErrorMessage("");
+      const updatedPost = { title, content, author };
+      await axios.put(`${API_URL}${editPostId}`, updatedPost);
+      resetForm();
+      await fetchPosts();
+    } catch (error) {
+      setErrorMessage("Unable to update the post right now.");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
-    <div>
-      <h1>Blog App</h1>
-      <div>
-        <input
-          type="text"
-          placeholder="Title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
-        <textarea
-          placeholder="Content"
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-        />
-        <input
-          type="text"
-          placeholder="Author"
-          value={author}
-          onChange={(e) => setAuthor(e.target.value)}
-        />
-
-        {isEditing ? (
-          <button onClick={handleUpdatePost}>Update Post</button>
-        ) : (
-          <button onClick={handleCreatePost}>Create Post</button>
-        )}
-      </div>
-
-      <h2>Posts</h2>
-      {posts.map((post) => (
-        <div key={post._id}>
-          <h3>{post.title}</h3>
-          <p>{post.content}</p>
-          <p>
-            <b>Author:</b> {post.author}
-          </p>
-          <button onClick={() => handleEditPost(post)}>Edit</button>
-          <button onClick={() => handleDeletePost(post._id)}>Delete</button>
+    <main className="app-shell">
+      <header className="page-header">
+        <div>
+          <h1>Blog Dashboard</h1>
+          <p>Write, edit, and manage posts.</p>
         </div>
-      ))}
-    </div>
+        <span className="post-count">{posts.length} posts</span>
+      </header>
+
+      <section className="content-grid">
+        <article className="composer-card">
+          <div className="section-heading">
+            <div>
+              <h2>{isEditing ? "Edit post" : "New post"}</h2>
+            </div>
+            {isEditing && (
+              <button className="ghost-button" onClick={resetForm}>
+                Cancel
+              </button>
+            )}
+          </div>
+
+          <div className="field-grid">
+            <label className="field">
+              <span>Title</span>
+              <input
+                type="text"
+                placeholder="Title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+              />
+            </label>
+
+            <label className="field">
+              <span>Author</span>
+              <input
+                type="text"
+                placeholder="Author"
+                value={author}
+                onChange={(e) => setAuthor(e.target.value)}
+              />
+            </label>
+
+            <label className="field field-full">
+              <span>Content</span>
+              <textarea
+                placeholder="Content"
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+              />
+            </label>
+          </div>
+
+          {errorMessage && <div className="status-banner error">{errorMessage}</div>}
+
+          <div className="action-row">
+            <button
+              className="primary-button"
+              onClick={isEditing ? handleUpdatePost : handleCreatePost}
+              disabled={isSaving || !title.trim() || !content.trim() || !author.trim()}
+            >
+              {isSaving ? "Saving..." : isEditing ? "Update post" : "Publish post"}
+            </button>
+            <button className="ghost-button" onClick={fetchPosts} disabled={isLoading}>
+              Refresh list
+            </button>
+          </div>
+        </article>
+
+        <aside className="posts-card">
+          <div className="section-heading">
+            <h2>Posts</h2>
+          </div>
+
+          {isLoading ? (
+            <div className="empty-state">Loading posts...</div>
+          ) : posts.length === 0 ? (
+            <div className="empty-state">No posts yet.</div>
+          ) : (
+            <div className="post-list">
+              {posts.map((post) => (
+                <article className="post-card" key={post._id}>
+                  <div className="post-meta">
+                    <span className="post-author">{post.author}</span>
+                  </div>
+                  <h3>{post.title}</h3>
+                  <p>{post.content}</p>
+                  <div className="post-actions">
+                    <button className="ghost-button" onClick={() => handleEditPost(post)}>
+                      Edit
+                    </button>
+                    <button
+                      className="danger-button"
+                      onClick={() => handleDeletePost(post._id)}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
+        </aside>
+      </section>
+    </main>
   );
 }
 
