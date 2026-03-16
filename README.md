@@ -1,144 +1,248 @@
-# FARM (FastAPI, React, MongoDB) Blog App
+# Blog Application (FARM Stack)
 
-This is a full-stack blog application built using the FARM stack:
+A full-stack blog application built using the FARM stack:
 
-- FastAPI for the backend
-- React for the frontend
-- MongoDB as the database
-- MongoDB Compass for database management
+- FastAPI - Backend API
+- React - Frontend user interface
+- MongoDB - Database
 
-The application allows users to create, read, update, and delete (CRUD) blog posts, with a simple and responsive interface.
+This project demonstrates a complete CRUD-based blog system where users can create, read, update, and delete blog posts through a simple and responsive interface.
 
-## Table of Contents
-
-- [FARM (FastAPI, React, MongoDB) Blog App](#farm-fastapi-react-mongodb-blog-app)
-  - [Table of Contents](#table-of-contents)
-  - [Features](#features)
-  - [Prerequisites](#prerequisites)
-  - [Project Structure](#project-structure)
-  - [Backend Setup (FastAPI)](#backend-setup-fastapi)
-    - [1. Install Backend Dependencies](#1-install-backend-dependencies)
-    - [2. Create MongoDB Connection (database.py)](#2-create-mongodb-connection-databasepy)
-    - [3. Define Blog Models (models.py)](#3-define-blog-models-modelspy)
-    - [4. Set Up FastAPI Routes (app.py)](#4-set-up-fastapi-routes-apppy)
-  - [Frontend Setup (React)](#frontend-setup-react)
-    - [1. Install Frontend Dependencies](#1-install-frontend-dependencies)
-    - [2. Create Blog App Interface (App.js)](#2-create-blog-app-interface-appjs)
-  - [MongoDB Setup (MongoDB Compass)](#mongodb-setup-mongodb-compass)
-    - [1. Install MongoDB and MongoDB Compass](#1-install-mongodb-and-mongodb-compass)
-    - [2. Create a Database and Collection](#2-create-a-database-and-collection)
-  - [Running the Application](#running-the-application)
-    - [1. Run the FastAPI Backend](#1-run-the-fastapi-backend)
-    - [2. Run the React Frontend](#2-run-the-react-frontend)
-  - [API Endpoints](#api-endpoints)
+This repository is forked from Hardvan and used as a learning project to understand full-stack development and backend API design.
 
 ## Features
 
-- Create, Read, Update, and Delete blog posts
-- FastAPI backend with MongoDB as the database
-- React frontend for interacting with the blog
-- Simple form for creating and updating blog posts
-- CORS support for communication between frontend and backend
+- Create blog posts
+- Read all blog posts
+- View individual blog posts
+- Update existing blog posts
+- Delete blog posts
+- FastAPI REST API backend
+- React frontend UI
+- MongoDB cloud database integration
+- CORS enabled for frontend-backend communication
 
-## Prerequisites
+## Tech Stack
 
-Before running this project, ensure you have the following installed:
+### Backend
 
-- Python 3.x
-- Node.js and npm
-- MongoDB and MongoDB Compass
+- FastAPI
+- Python
+- Motor (Async MongoDB driver)
 
-## Project Structure
+### Frontend
 
-```plaintext
-FARM-Blog-App/
-├── backend/
-│   ├── app.py              # FastAPI app with blog routes
-│   ├── database.py         # MongoDB connection setup
-│   ├── models.py           # Pydantic models for blog posts
-├── frontend/
-│   ├── public/
-│   ├── src/
-│   │   ├── App.js          # React app for frontend
-│   ├── package.json        # React dependencies
-├── README.md               # Project documentation
+- React
+- JavaScript
+- React Hooks
+
+### Database
+
+- MongoDB Atlas
+
+### Tools
+
+- Node.js
+- npm
+- VS Code
+
+## Project Architecture
+
+```
+React Frontend
+      |
+HTTP API Requests
+      |
+FastAPI Backend
+      |
+MongoDB Database
 ```
 
-## Backend Setup (FastAPI)
+The React frontend interacts with the FastAPI backend through REST APIs.
+The backend processes requests and performs database operations using MongoDB.
 
-### 1. Install Backend Dependencies
+## Folder Structure
 
-```bash
-pip install -r requirements.txt
+```
+blog_app
+|
+|-- backend
+|   |-- main.py
+|   |-- database.py
+|   |-- models
+|   |-- routes
+|   |-- schemas
+|
+|-- frontend
+|   |-- src
+|   |-- public
+|   |-- package.json
+|
+|-- README.md
 ```
 
-### 2. Create MongoDB Connection (database.py)
+## Backend
 
-Inside `database.py`, set up a connection to MongoDB.
+Handles:
 
-### 3. Define Blog Models (models.py)
+- API endpoints
+- Database connection
+- CRUD logic
+- Data validation
 
-Create `models.py` to define the BlogPost model for request validation.
+## Frontend
 
-### 4. Set Up FastAPI Routes (app.py)
+Handles:
 
-Define CRUD routes in `app.py` to create, read, update, and delete blog posts.
-
-## Frontend Setup (React)
-
-### 1. Install Frontend Dependencies
-
-Navigate to the frontend directory and install dependencies:
-
-```bash
-cd frontend
-npm install
-```
-
-### 2. Create Blog App Interface (App.js)
-
-The React frontend is set up in `src/App.js`.
-
-## MongoDB Setup (MongoDB Compass)
-
-### 1. Install MongoDB and MongoDB Compass
-
-- Download and install MongoDB from the MongoDB website.
-- Open MongoDB Compass and connect to the MongoDB instance.
-
-### 2. Create a Database and Collection
-
-- In MongoDB Compass, create a new database called `blog_db`.
-- Add a collection named `posts`.
-
-## Running the Application
-
-### 1. Run the FastAPI Backend
-
-Start the FastAPI server:
-
-```bash
-cd backend
-uvicorn app:app --reload
-```
-
-The FastAPI backend should now be running at `http://localhost:8000`.
-
-### 2. Run the React Frontend
-
-In a new terminal, navigate to the frontend directory and start the React app:
-
-```bash
-cd frontend
-npm start
-```
-
-The React app should be accessible at `http://localhost:3000`.
+- User interface
+- Form input
+- API requests
+- Dynamic rendering of blog posts
 
 ## API Endpoints
 
-- `POST /posts/`: Create a new blog post
-- `GET /posts/`: Retrieve all blog posts
-- `GET /posts/{post_id}`: Retrieve a specific blog post by ID
-- `PUT /posts/{post_id}`: Update a blog post by ID
-- `DELETE /posts/{post_id}`: Delete a blog post by ID
+### Create Post
+
+`POST /posts/`
+
+Creates a new blog post.
+
+### Get All Posts
+
+`GET /posts/`
+
+Returns all blog posts.
+
+### Get Post by ID
+
+`GET /posts/{post_id}`
+
+Retrieves a specific blog post using its ID.
+
+### Update Post
+
+`PUT /posts/{post_id}`
+
+Updates an existing blog post.
+
+### Delete Post
+
+`DELETE /posts/{post_id}`
+
+Deletes a blog post from the database.
+
+## Database Setup
+
+This project uses MongoDB Atlas as the cloud database.
+
+Example connection string:
+
+```
+mongodb+srv://db_user:<password>@cluster0.qwshkfs.mongodb.net/blog_app
+```
+
+Database configuration in backend:
+
+```python
+from motor.motor_asyncio import AsyncIOMotorClient
+
+MONGO_DETAILS = "mongodb+srv://db_user:<password>@cluster0.qwshkfs.mongodb.net/blog_app"
+
+client = AsyncIOMotorClient(MONGO_DETAILS)
+
+database = client.blog_app
+
+post_collection = database.get_collection("posts")
+```
+
+## Installation and Setup
+
+### 1. Clone the repository
+
+```
+git clone https://github.com/your-username/blog_app.git
+cd blog_app
+```
+
+### Backend Setup
+
+Install dependencies:
+
+```
+pip install -r requirements.txt
+```
+
+Run the FastAPI server:
+
+```
+uvicorn main:app --reload
+```
+
+Backend runs on:
+
+```
+http://localhost:8000
+```
+
+API documentation:
+
+```
+http://localhost:8000/docs
+```
+
+### Frontend Setup
+
+Navigate to the frontend directory:
+
+```
+cd frontend
+```
+
+Install dependencies:
+
+```
+npm install
+```
+
+Start the React development server:
+
+```
+npm start
+```
+
+Frontend runs on:
+
+```
+http://localhost:3000
+```
+
+## Application Workflow
+
+1. User interacts with the React UI.
+2. React sends API requests to the FastAPI backend.
+3. FastAPI processes requests and communicates with MongoDB.
+4. Data is stored or retrieved from the database.
+5. The response is returned to the frontend and displayed.
+
+## Learning Outcomes
+
+Through this project I learned:
+
+- Building REST APIs using FastAPI
+- Full-stack development using the FARM stack
+- Integrating React with backend APIs
+- Working with MongoDB Atlas cloud databases
+- Implementing CRUD operations in real-world applications
+
+## Future Improvements
+
+- User authentication (JWT)
+- Blog comments system
+- Image upload for blog posts
+- Pagination and search
+- Docker containerization
+- Deployment
+
+## License
+
+This project is for educational and learning purposes.
