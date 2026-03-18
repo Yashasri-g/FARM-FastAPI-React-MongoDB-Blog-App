@@ -19,6 +19,8 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+      - REACT_APP_API_URL=http://13.234.202.80:8000
     container_name: farm-blog-frontend
     ports:
       - "3000:3000"
