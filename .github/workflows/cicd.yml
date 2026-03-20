@@ -93,7 +93,22 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main')
     steps:
-      # Deploy to EC2
+      # 1. Checkout code so we can copy files to EC2
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Copy docker-compose.yml to EC2 so it's always in sync
+      - name: Copy docker-compose.yml to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: ${{ secrets.EC2_PORT }}
+          source: "docker-compose.yml"
+          target: ${{ secrets.EC2_APP_PATH }}
+
+      # 3. Deploy to EC2
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -104,21 +119,31 @@ jobs:
           timeout: 60s
           command_timeout: 10m
           script: |
+            # Free up disk space before pulling
+            echo "Cleaning up Docker disk space..."
+            docker system prune -af --volumes
+
             cd ${{ secrets.EC2_APP_PATH }}
+
             echo "Current directory:"
             pwd
+
             echo "Files in directory:"
             ls -la
+
             echo "Pulling latest images..."
             DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }} docker compose pull
+
             echo "Stopping old containers..."
             docker compose down
+
             echo "Starting new containers..."
             DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }} docker compose up -d
+
             echo "Running containers:"
             docker compose ps
 
-      # Feature Tracking
+      # 4. Feature Tracking
       - name: Feature Tracking
         run: |
           curl -X POST "${{ secrets.FEATURE_API_BASE }}/features/" \
