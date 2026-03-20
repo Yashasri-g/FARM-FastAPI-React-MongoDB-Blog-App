@@ -107,6 +107,12 @@ jobs:
           script: |
             cd ${{ secrets.EC2_APP_PATH }}
 
+            echo "Current directory:"
+            pwd
+            
+            echo "Files:"
+            ls
+
             echo "Pulling latest images..."
             docker compose pull
 
