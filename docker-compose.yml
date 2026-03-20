@@ -1,6 +1,6 @@
 services:
   backend:
-    image: ${DOCKER_USERNAME}/farm-blog-backend:latest
+    image: docker.io/yashasri1209/farm-blog-backend:latest
     container_name: farm-blog-backend
     ports:
       - "8000:8000"
@@ -13,7 +13,7 @@ services:
     restart: unless-stopped
 
   frontend:
-    image: ${DOCKER_USERNAME}/farm-blog-frontend:latest
+    image: docker.io/yashasri1209/farm-blog-frontend:latest
     container_name: farm-blog-frontend
     ports:
       - "80:80"
