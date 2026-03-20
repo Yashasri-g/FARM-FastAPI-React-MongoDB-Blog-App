@@ -68,8 +68,8 @@ jobs:
           file: backend/Dockerfile
           push: true
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/farm-blog-backend:latest
-            ${{ secrets.DOCKER_USERNAME }}/farm-blog-backend:${{ github.sha }}
+            docker.io/yashasri1209/farm-blog-backend:latest
+            docker.io/yashasri1209/farm-blog-backend:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -83,8 +83,8 @@ jobs:
           build-args: |
             REACT_APP_API_URL=http://65.1.82.17:8000
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/farm-blog-frontend:latest
-            ${{ secrets.DOCKER_USERNAME }}/farm-blog-frontend:${{ github.sha }}
+            docker.io/yashasri1209/farm-blog-frontend:latest
+            docker.io/yashasri1209/farm-blog-frontend:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -131,13 +131,13 @@ jobs:
             ls -la
 
             echo "Pulling latest images..."
-            DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }} docker compose pull
+            docker compose pull
 
             echo "Stopping old containers..."
             docker compose down
 
             echo "Starting new containers..."
-            DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }} docker compose up -d
+            docker compose up -d
 
             echo "Running containers:"
             docker compose ps
