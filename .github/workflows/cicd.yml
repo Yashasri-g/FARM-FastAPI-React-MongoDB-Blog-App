@@ -119,30 +119,16 @@ jobs:
           timeout: 60s
           command_timeout: 10m
           script: |
-            # Free up disk space before pulling
-            echo "Cleaning up Docker disk space..."
-            docker system prune -af --volumes
-
+            echo "Cleaning Docker..."
+            docker system prune -af --volumes || true
+            echo "Restarting Docker..."
+            sudo systemctl restart docker || true
             cd ${{ secrets.EC2_APP_PATH }}
-
-            echo "Current directory:"
-            pwd
-
-            echo "Files in directory:"
-            ls -la
-
             echo "Pulling latest images..."
             DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }} docker compose pull
-
-            echo "Stopping old containers..."
-            docker compose down
-
-            echo "Starting new containers..."
-            DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }} docker compose up -d
-
-            echo "Running containers:"
+            echo "Recreating containers..."
+            DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }} docker compose up -d --force-recreate
             docker compose ps
-
       # 4. Feature Tracking
       - name: Feature Tracking
         run: |
