@@ -141,11 +141,3 @@ jobs:
 
             echo "Running containers:"
             docker compose ps
-
-      # 4. Feature Tracking
-      - name: Feature Tracking
-        continue-on-error: true
-        run: |
-          curl -X POST "${{ secrets.FEATURE_API_BASE }}/features/" \
-          -H "Content-Type: application/json" \
-          -d '{"title":"New Deployment","description":"New version deployed via CI/CD"}'
