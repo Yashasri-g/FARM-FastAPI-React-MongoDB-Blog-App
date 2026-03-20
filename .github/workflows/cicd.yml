@@ -144,6 +144,7 @@ jobs:
 
       # 4. Feature Tracking
       - name: Feature Tracking
+        continue-on-error: true
         run: |
           curl -X POST "${{ secrets.FEATURE_API_BASE }}/features/" \
           -H "Content-Type: application/json" \
