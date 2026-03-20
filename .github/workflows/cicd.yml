@@ -103,8 +103,15 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           port: ${{ secrets.EC2_PORT }}
+          debug: true
           script: |
             cd ${{ secrets.EC2_APP_PATH }}
+
+            echo "Current directory:"
+            pwd
+            
+            echo "Files:"
+            ls
 
             echo "Pulling latest images..."
             docker compose pull
