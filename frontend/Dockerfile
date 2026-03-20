@@ -1,15 +1,20 @@
-FROM node:18-alpine
-
+# Stage 1 - Build React app
+FROM node:18-alpine AS builder
 WORKDIR /app
 
 ARG REACT_APP_API_URL
 ENV REACT_APP_API_URL=$REACT_APP_API_URL
 
-COPY frontend/package.json frontend/package-lock.json /app/
+COPY frontend/package.json frontend/package-lock.json ./
 RUN npm ci
 
-COPY frontend /app
+COPY frontend/ .
+RUN npm run build
 
-EXPOSE 3000
+# Stage 2 - Serve with Nginx
+FROM nginx:alpine
+COPY --from=builder /app/build /usr/share/nginx/html
+COPY frontend/nginx.conf /etc/nginx/conf.d/default.conf
 
-CMD ["npm", "start"] 
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]

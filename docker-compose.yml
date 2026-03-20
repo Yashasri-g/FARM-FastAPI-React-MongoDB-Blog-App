@@ -1,8 +1,6 @@
 services:
   backend:
-    build:
-      context: .
-      dockerfile: backend/Dockerfile
+    image: ${DOCKER_USERNAME}/farm-blog-backend:latest
     container_name: farm-blog-backend
     ports:
       - "8000:8000"
@@ -10,29 +8,18 @@ services:
       - .env
     environment:
       - MONGO_URI=${MONGO_URI:-mongodb://mongodb:27017/blog_app}
-    volumes:
-      - ./backend:/app
     depends_on:
       - mongodb
+    restart: unless-stopped
 
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-      args:
-      - REACT_APP_API_URL=http://65.1.82.17:8000
+    image: ${DOCKER_USERNAME}/farm-blog-frontend:latest
     container_name: farm-blog-frontend
     ports:
-      - "3000:3000"
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-    environment:
-      - HOST=0.0.0.0
-      - PORT=3000
-      - CHOKIDAR_USEPOLLING=true
+      - "80:80"
     depends_on:
       - backend
+    restart: unless-stopped
 
   mongodb:
     image: mongo:7
@@ -41,6 +28,7 @@ services:
       - "27017:27017"
     volumes:
       - mongo_data:/data/db
+    restart: unless-stopped
 
 volumes:
   mongo_data:
