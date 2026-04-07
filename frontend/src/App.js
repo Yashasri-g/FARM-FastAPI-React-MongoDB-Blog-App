@@ -100,7 +100,7 @@ function App() {
               />
             </label>
             <label className="field">
-              <span>Author</span>
+              <span>Author name</span>
               <input
                 type="text"
                 value={author}
